@@ -188,6 +188,7 @@ public class BasePage {
         waitExplicit.until(ExpectedConditions.not(ExpectedConditions.visibilityOf(element)));
     }
 
+
     /**
      * Waits until the specified web element is not present in the DOM.
      *

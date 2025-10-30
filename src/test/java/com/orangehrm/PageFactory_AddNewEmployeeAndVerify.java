@@ -4,7 +4,7 @@ import common.BaseTest;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
-import pageFactory.MenuListPageFactory;
+import pageFactory.HomePageFactory;
 import pageFactory.PIMPageFactory;
 import pageFactory.PersonalDetailPageFactory;
 import pageFactory.AddEmployeePageFactory;
@@ -13,15 +13,15 @@ import pageFactory.LoginPageFactory;
 
 public class PageFactory_AddNewEmployeeAndVerify extends BaseTest {
     WebDriver driver;
-    MenuListPageFactory menuListPage;
+    HomePageFactory menuListPage;
     PIMPageFactory pimPage;
     AddEmployeePageFactory addEmployee;
     PersonalDetailPageFactory personalDetailPage;
     LoginPageFactory loginPage;
 
-    String firstName = "Robert";
-    String lastName = "Hoang";
-    String employeeId ;
+    String firstName;
+    String lastName;
+    String employeeId;
 
 
     @Parameters({"url", "browser"})
@@ -29,9 +29,11 @@ public class PageFactory_AddNewEmployeeAndVerify extends BaseTest {
     public void initPage(String url, String browser) {
         driver = getBrowserDriver(url, browser);
         loginPage = new LoginPageFactory(driver);
-        menuListPage = new MenuListPageFactory(driver);
+        menuListPage = new HomePageFactory(driver);
         pimPage = new PIMPageFactory(driver);
         personalDetailPage = new PersonalDetailPageFactory(driver);
+        firstName = "Robert";
+        lastName = "Hoang";
 
     }
 
@@ -41,6 +43,7 @@ public class PageFactory_AddNewEmployeeAndVerify extends BaseTest {
         loginPage.enterToPassword("Long01101998@");
         loginPage.clickToLoginButton();
     }
+
     @Test(dependsOnMethods = "LoginToOrangeHRM")
     public void AddNewEmployee() {
         menuListPage.clickOnPIM();
@@ -50,6 +53,7 @@ public class PageFactory_AddNewEmployeeAndVerify extends BaseTest {
         employeeId = pimPage.getAddEmployeePage().getEmployeeId();
         pimPage.getAddEmployeePage().clickSaveButton();
     }
+
     @Test(dependsOnMethods = "AddNewEmployee")
     public void VerifyNewEmployee() {
         String actualFirstName = personalDetailPage.getFirstName();
@@ -59,6 +63,7 @@ public class PageFactory_AddNewEmployeeAndVerify extends BaseTest {
         Assert.assertEquals(actualLastName, lastName);
         Assert.assertEquals(actualEmployeeId, employeeId);
     }
+
     @AfterClass
     public void closeBrowser() {
         driver.quit();

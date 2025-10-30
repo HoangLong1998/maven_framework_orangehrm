@@ -5,9 +5,9 @@ import org.openqa.selenium.WebDriver;
 import interfaces.pageUIs.MenuListPageUI;
 
 
-public class MenuListPageObject extends BasePage {
+public class HomePageObject extends BasePage {
     private WebDriver driver;
-    public MenuListPageObject(WebDriver driver) {
+    public HomePageObject(WebDriver driver) {
         this.driver = driver;
     }
 
@@ -15,4 +15,5 @@ public class MenuListPageObject extends BasePage {
         System.out.println("Clicked on PIM menu");
         clickToElement(driver.findElement(By.xpath(MenuListPageUI.PIM)));
     }
+
 }

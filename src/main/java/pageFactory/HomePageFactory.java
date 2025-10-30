@@ -8,14 +8,14 @@ import org.openqa.selenium.WebElement;
 
 
 
-public class MenuListPageFactory extends BasePage {
+public class HomePageFactory extends BasePage {
     private WebDriver driver;
 
     @FindBy(xpath = "//ul[@class=\"oxd-main-menu\"]//li//span[text()='PIM']")
     private WebElement PIMMenu;
 
 
-    public MenuListPageFactory(WebDriver driver) {
+    public HomePageFactory(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }

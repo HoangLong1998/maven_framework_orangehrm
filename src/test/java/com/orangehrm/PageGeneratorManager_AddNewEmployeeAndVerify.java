@@ -4,20 +4,16 @@ import common.BaseTest;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
-import pageObjects.LoginPagePageObject;
-import pageObjects.HomePageObject;
-import pageObjects.PIMPageObject;
-import pageObjects.AddEmployeePageObject;
-import pageObjects.PersonalDetailPageObject;
+import pageGeneratorManager.*;
 
 
-public class PageObjectModel_AddNewEmployeeAndVerify extends BaseTest {
+public class PageGeneratorManager_AddNewEmployeeAndVerify extends BaseTest {
     WebDriver driver;
-    HomePageObject menuListPage;
-    PIMPageObject pimPage;
-    AddEmployeePageObject addEmployee;
-    PersonalDetailPageObject personalDetailPage;
-    LoginPagePageObject loginPage;
+    HomePage homePage;
+    PIMPage pimPage;
+    AddEmployeePage addEmployee;
+    PersonalDetailPage personalDetailPage;
+    LoginPagePage loginPage;
 
     String firstName;
     String lastName;
@@ -28,30 +24,26 @@ public class PageObjectModel_AddNewEmployeeAndVerify extends BaseTest {
     @BeforeClass
     public void initPage(String url, String browser) {
         driver = getBrowserDriver(url, browser);
-        loginPage = new LoginPagePageObject(driver);
-        menuListPage = new HomePageObject(driver);
-        pimPage = new PIMPageObject(driver);
-        personalDetailPage = new PersonalDetailPageObject(driver);
+        loginPage = PageGeneratorManager.getPage(LoginPagePage.class, driver);
         firstName = "Robert";
         lastName = "Hoang";
-
     }
 
     @Test
     public void LoginToOrangeHRM() {
         loginPage.enterToUsername("hoanglong98");
         loginPage.enterToPassword("Long01101998@");
-        loginPage.clickToLoginButton();
+        homePage = loginPage.clickToLoginButton();
     }
 
     @Test(dependsOnMethods = "LoginToOrangeHRM")
     public void AddNewEmployee() {
-        menuListPage.clickOnPIM();
+        pimPage = homePage.clickOnPIM();
         pimPage.clickOnAddEmployee();
         pimPage.getAddEmployeePage().setFirstName(firstName);
         pimPage.getAddEmployeePage().setLastName(lastName);
         employeeId = pimPage.getAddEmployeePage().getEmployeeId();
-        pimPage.getAddEmployeePage().clickSaveButton();
+        personalDetailPage = pimPage.getAddEmployeePage().clickSaveButton();
     }
 
     @Test(dependsOnMethods = "AddNewEmployee")
