@@ -1,11 +1,8 @@
 package common;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 
 import java.awt.Toolkit;
@@ -14,6 +11,7 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.openqa.selenium.support.ui.Select;
@@ -28,11 +26,12 @@ public class BasePage {
     protected WebDriver driver;
     protected Actions action;
     protected JavascriptExecutor jsExecutor;
-    protected long shortTimeout = 5;
-    protected long longTimeout = 30;
+
+    public BasePage(WebDriver driver) {
+        this.driver = driver;
+    }
 
     /*--------------------------------------------------------------------------------------------------------------COMMON ACTIONS--------------------------------------------------------------------------------------*/
-
 
 
     public void openUrl(String url) {
@@ -49,6 +48,28 @@ public class BasePage {
         waitForElementClickable(element);
         element.click();
     }
+
+
+    /**
+     * Checks if a spinner (loading indicator) has disappeared from the page.
+     *
+     * This method waits for the specified web element (spinner) to become invisible.
+     * If the spinner disappears within the timeout period, the method returns true.
+     * If the spinner does not disappear and a TimeoutException is thrown, the method catches
+     * the exception and returns false.
+     *
+     * @param element the web element representing the spinner to check
+     * @return true if the spinner disappears, false otherwise
+     */
+    public boolean isSpinnerLoadingDisAppeared(WebElement element) {
+        try {
+            waitForElementInvisible(element);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
 
     /**
      * Retrieves the text of the specified web element.
@@ -294,11 +315,11 @@ public class BasePage {
     /**
      * Retrieves all items in a custom dropdown menu based on the provided XPath.
      *
-     * @param childItemXpath the XPath string used to locate all child items in the dropdown
+     * @param locator the XPath string used to locate all child items in the dropdown
      * @return a list of WebElements representing all items in the dropdown
      */
-    public List<WebElement> getListElements(String childItemXpath) {
-        return driver.findElements(By.xpath(childItemXpath));
+    public List<WebElement> getListElements(String locator) {
+        return driver.findElements(By.xpath(locator));
     }
 
     /**
@@ -461,6 +482,11 @@ public class BasePage {
         action.dragAndDrop(sourceElement, targetElement).perform();
     }
 
+
+  /*
+   -------------------------------------------------------------------------------------------------------------Upload File ---------------------------------------------------------------------------------------------
+  */
+
     /**
      * Uploads multiple files to the specified web element.
      *
@@ -468,14 +494,16 @@ public class BasePage {
      * @param fileNames the names of the files to upload
      */
     public void uploadMultipleFiles(WebElement element, String... fileNames) {
-        String filePath = System.getProperty("user.dir") + File.separator + "uploadFiles" + File.separator;
+        String filePath = GlobalConstants.UPLOAD_PATH;
         String fullFileName = "";
         for (String file : fileNames) {
             fullFileName = fullFileName + filePath + file + "\n";
         }
         fullFileName = fullFileName.trim();
+        System.out.println(fullFileName);
         element.sendKeys(fullFileName);
     }
+
 
     /**
      * Uploads a file using the Robot class.
@@ -562,7 +590,42 @@ public class BasePage {
         return "automation" + System.currentTimeMillis() + "@gmail.com";
     }
 
-//-----------------------------------------------------------------------------Switch Page object --------------------------------------------------------------------------------------
+
+    //-----------------------------------------------------------------------------Take ScreenShot --------------------------------------------------------------------------------------
+
+    /**
+     * Captures a screenshot of the current browser window and saves it to the specified file.
+     *
+     * @param driver   the WebDriver instance used to interact with the browser
+     * @param fileName the name of the file (without extension) where the screenshot will be saved
+     */
+    public void takeSnap(WebDriver driver, String fileName) {
+        try {
+            File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            new File("screenshots").mkdir(); // Create folder if it doesn't exist
+            src.renameTo(new File("screenshots/" + fileName + ".png"));
+        } catch (Exception e) {
+            System.out.println("❌ Screenshot failed: " + e.getMessage());
+        }
+    }
+
+
+    //-----------------------------------------------------------------------------Table --------------------------------------------------------------------------------------
+
+    /**
+     * Retrieves all text values from a specific column in a table.
+     *
+     * @param locator the XPath string used to locate the column values
+     * @return a list of strings representing the text values in the column
+     */
+    public List<String> getListValuesByColumnName(String locator) {
+        List<String> allValues = new ArrayList<String>();
+        List<WebElement> columnValues = getListElements(locator);
+        for (WebElement rowValue : columnValues) {
+            allValues.add(rowValue.getText());
+        }
+        return allValues;
+    }
 
 
 }

@@ -4,11 +4,11 @@ import common.BaseTest;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
-import pageFactory.HomePageFactory;
-import pageFactory.PIMPageFactory;
-import pageFactory.PersonalDetailPageFactory;
-import pageFactory.AddEmployeePageFactory;
-import pageFactory.LoginPageFactory;
+import pageFactory.OrangeHRM.HomePageFactory;
+import pageFactory.OrangeHRM.PIMPageFactory;
+import pageFactory.OrangeHRM.PersonalDetailPageFactory;
+import pageFactory.OrangeHRM.AddEmployeePageFactory;
+import pageFactory.OrangeHRM.LoginPageFactory;
 
 
 public class PageFactory_AddNewEmployeeAndVerify extends BaseTest {

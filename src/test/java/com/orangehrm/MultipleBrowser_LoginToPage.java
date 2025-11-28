@@ -3,7 +3,7 @@ package com.orangehrm;
 import common.BaseTest;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.*;
-import pageObjects.LoginPagePageObject;
+import pageObjects.orangeHRM.LoginPagePageObject;
 
 
 public class MultipleBrowser_LoginToPage extends BaseTest{

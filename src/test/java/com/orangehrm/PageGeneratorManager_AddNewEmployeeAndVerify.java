@@ -4,7 +4,7 @@ import common.BaseTest;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
-import pageGeneratorManager.*;
+import pageGeneratorManager.OrangeHRM.*;
 
 
 public class PageGeneratorManager_AddNewEmployeeAndVerify extends BaseTest {
@@ -38,7 +38,7 @@ public class PageGeneratorManager_AddNewEmployeeAndVerify extends BaseTest {
 
     @Test(dependsOnMethods = "LoginToOrangeHRM")
     public void AddNewEmployee() {
-        pimPage = homePage.clickOnPIM();
+        pimPage = homePage.openPageByPageName("PIM");
         pimPage.clickOnAddEmployee();
         pimPage.getAddEmployeePage().setFirstName(firstName);
         pimPage.getAddEmployeePage().setLastName(lastName);

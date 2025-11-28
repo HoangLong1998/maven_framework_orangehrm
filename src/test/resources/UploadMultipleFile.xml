@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Run multiple browsers" >
+    <parameter name="url" value="http://localhost/orangehrm/orangehrm-5.7/"/>
+    <test name="Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.orangehrm.UploadFile"/>
+        </classes>
+    </test>
+</suite>
