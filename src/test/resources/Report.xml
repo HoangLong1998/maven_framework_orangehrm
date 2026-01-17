@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Allure Report">
+    <!-- Method listener to report failed steps during test execution. Test cases will run all steps even if any step fails (using Verify instead of Assert). -->
+    <listeners>
+        <listener class-name="common.MethodListener"/>
+        <!--  <listener class-name="reportConfig.ExtentTestListener"></listener> -->
+        <!--<listener class-name="reportConfig.ChainTestReport"></listener>-->
+        <listener class-name="reportConfig.AllureTestListener"></listener>
+    </listeners>
+
+    <!--    <test name="Chrome">-->
+    <!--        <parameter name="url" value="http://localhost/orangehrm/orangehrm-5.7/"/>-->
+    <!--        <parameter name="browser" value="chrome"/>-->
+    <!--        <classes>-->
+    <!--            <class name="com.orangehrm.ExtentReportV5"/>-->
+    <!--        </classes>-->
+    <!--    </test>-->
+
+    <test name="Chrome">
+        <parameter name="url" value="http://localhost/orangehrm/orangehrm-5.7/"/>
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.orangehrm.AllureReport"/>
+        </classes>
+    </test>
+</suite>

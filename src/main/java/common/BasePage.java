@@ -1,5 +1,7 @@
 package common;
 
+import interfaces.pageUIs.OrangeHRM.HomePageUI;
+import io.qameta.allure.Step;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -627,5 +629,16 @@ public class BasePage {
         return allValues;
     }
 
+    //-----------------------------------------------------------------------------BaseFunctions --------------------------------------------------------------------------------------
 
+
+    /**
+     * Opens a specific page by clicking on its name. from the main menu.
+     * @param pageName The name of the sub-page to open.
+     */
+    @Step("Open Page By Page Name: {0}")
+    public void openPageByPageName(String pageName) {
+        System.out.println("Clicked on Sub Page by Page Name");
+        clickToElement(driver.findElement(By.xpath(String.format(BasePageUI.PAGE_LOCATOR_BY_NAME, pageName))));
+    }
 }

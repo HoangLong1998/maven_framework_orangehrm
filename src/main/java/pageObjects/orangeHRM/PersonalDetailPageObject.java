@@ -1,6 +1,7 @@
 package pageObjects.orangeHRM;
 
 import common.BasePage;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import interfaces.pageUIs.OrangeHRM.PersonalDetailPageUI;
@@ -26,6 +27,7 @@ public class PersonalDetailPageObject extends BasePage {
      *
      * @return The first name of the employee as a String.
      */
+    @Step("Get First Name")
     public String getFirstName() {
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.FIRST_NAME)), "value");
     }
@@ -35,6 +37,7 @@ public class PersonalDetailPageObject extends BasePage {
      *
      * @return The last name of the employee as a String.
      */
+    @Step("Get Last Name")
     public String getLastName() {
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.LAST_NAME)), "value");
     }
@@ -44,6 +47,7 @@ public class PersonalDetailPageObject extends BasePage {
      *
      * @return The employee ID as a String.
      */
+    @Step("Get Employee ID")
     public String getEmployeeId() {
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.EMPLOYEE_ID)), "value");
     }

@@ -1,5 +1,6 @@
 package pageObjects.orangeHRM;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import common.BasePage;
 import org.openqa.selenium.WebDriver;
@@ -68,6 +69,7 @@ public class PIMPageObject extends BasePage {
      * Clicks on the "Add Employee" option on the PIM page.
      * Logs the action and interacts with the corresponding web element.
      */
+    @Step("Click on Add Employee on PIM page")
     public void clickOnAddEmployee() {
         System.out.println("Clicked on Add Employee");
         clickToElement(driver.findElement(By.xpath(PIMPageUI.ADD_EMPLOYEE)));
@@ -77,6 +79,7 @@ public class PIMPageObject extends BasePage {
      * Clicks on the "Employee List" option on the PIM page.
      * Logs the action and interacts with the corresponding web element.
      */
+    @Step("Click on Employee List on PIM page")
     public void clickOnEmployeeList() {
         System.out.println("Clicked on Employee List");
         clickToElement(driver.findElement(By.xpath(PIMPageUI.EMPLOYEE_LIST)));
@@ -86,6 +89,7 @@ public class PIMPageObject extends BasePage {
      * Clicks on the "Configuration" option on the PIM page.
      * Logs the action and interacts with the corresponding web element.
      */
+    @Step("Click on Configuration on PIM page")
     public void clickOnConfiguration() {
         System.out.println("Click on Configuration on PIM page");
         clickToElement(driver.findElement(By.xpath(PIMPageUI.CONFIGURATION)));

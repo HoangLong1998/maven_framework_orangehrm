@@ -1,6 +1,7 @@
 package pageObjects.orangeHRM;
 
 import common.BasePage;
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import interfaces.pageUIs.OrangeHRM.AddEmployeePageUI;
@@ -26,6 +27,7 @@ public class AddEmployeePageObject extends BasePage {
      * Sets the first name of the employee in the Add Employee form.
      * @param firstName The first name of the employee to be entered.
      */
+    @Step("Enter to First Name with value: {0}")
     public void setFirstName(String firstName) {
         setTextToElement(driver.findElement(By.xpath(AddEmployeePageUI.FIRSTNAME)), firstName);
     }
@@ -34,6 +36,7 @@ public class AddEmployeePageObject extends BasePage {
      * Sets the last name of the employee in the Add Employee form.
      * @param lastName The last name of the employee to be entered.
      */
+    @Step("Enter to Last Name with value: {0}")
     public void setLastName(String lastName) {
         setTextToElement(driver.findElement(By.xpath(AddEmployeePageUI.LASTNAME)), lastName);
     }
@@ -42,6 +45,7 @@ public class AddEmployeePageObject extends BasePage {
      * Retrieves the employee ID from the Add Employee form.
      * @return The employee ID as a String.
      */
+    @Step("Get Employee ID")
     public String getEmployeeId() {
         return getElementAttribute(driver.findElement(By.xpath(AddEmployeePageUI.EMPLOYEE_ID)), "value");
     }
@@ -49,6 +53,7 @@ public class AddEmployeePageObject extends BasePage {
     /**
      * Clicks the "Save" button on the Add Employee form.
      */
+    @Step("Click to Save Button")
     public void clickSaveButton() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         // Wait for loader to disappear
