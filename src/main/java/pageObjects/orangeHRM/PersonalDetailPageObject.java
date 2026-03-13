@@ -29,6 +29,7 @@ public class PersonalDetailPageObject extends BasePage {
      */
     @Step("Get First Name")
     public String getFirstName() {
+        waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.FIRST_NAME)));
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.FIRST_NAME)), "value");
     }
 
@@ -39,6 +40,7 @@ public class PersonalDetailPageObject extends BasePage {
      */
     @Step("Get Last Name")
     public String getLastName() {
+        waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.LAST_NAME)));
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.LAST_NAME)), "value");
     }
 
@@ -49,8 +51,23 @@ public class PersonalDetailPageObject extends BasePage {
      */
     @Step("Get Employee ID")
     public String getEmployeeId() {
+        waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.EMPLOYEE_ID)));
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.EMPLOYEE_ID)), "value");
     }
+
+     public void setMiddleName(String middleName) {
+         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.MIDDLE_NAME)));
+         setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.MIDDLE_NAME)), middleName);
+     }
+
+     public void setDriverLicenseNumber(String driverLicenseNumber) {
+         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.DRIVER_LICENSE_NUMBER)));
+         setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.DRIVER_LICENSE_NUMBER)), driverLicenseNumber);
+     }
+     public void setLicenseExpiryDate(String licenseExpiryDate) {
+         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.LICENSE_EXPIRY_DATE)));
+         setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.LICENSE_EXPIRY_DATE)), licenseExpiryDate);
+     }
 
 
 }

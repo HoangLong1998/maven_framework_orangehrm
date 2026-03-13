@@ -1,0 +1,18 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Share Class state using Cookies Suite" verbose="1" >
+    <!-- Method listener to report failed steps during test execution. Test cases will run all steps even if any step fails (using Verify instead of Assert). -->
+    <listeners>
+        <listener class-name="common.MethodListener"/>
+        <listener class-name="reportConfig.AllureTestListener"></listener>
+    </listeners>
+    <!-- Need preserve-order="true" to run classes in the order defined in the XML file.-->
+   <test name="Chrome" preserve-order="true">
+       <parameter name="url" value="http://localhost/orangehrm/orangehrm-5.7/"/>
+       <parameter name="browser" value="chrome"/>
+       <classes>
+           <class name="com.orangehrm.ShareClassState_Cookies.Class01"/>
+           <class name="com.orangehrm.ShareClassState_Cookies.Class02"/>
+
+       </classes>
+   </test>
+</suite>

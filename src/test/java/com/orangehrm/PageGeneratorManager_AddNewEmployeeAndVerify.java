@@ -38,7 +38,7 @@ public class PageGeneratorManager_AddNewEmployeeAndVerify extends BaseTest {
 
     @Test(dependsOnMethods = "LoginToOrangeHRM")
     public void AddNewEmployee() {
-        pimPage = homePage.openPageByPageName("PIM");
+        pimPage = homePage.openPageAndReturnByName("PIM");
         pimPage.clickOnAddEmployee();
         pimPage.getAddEmployeePage().setFirstName(firstName);
         pimPage.getAddEmployeePage().setLastName(lastName);

@@ -33,16 +33,16 @@ public class MyInfoPageObject extends BasePage {
         return personalDetailPage;
     }
 
-    /**
-     * Opens a specific page by clicking on its name.
-     * The page name is used to locate the corresponding web element.
-     *
-     * @param pageName The name of the page to open.
-     */
-    public void openPageByPageName(String pageName) {
-        System.out.println("Open the Page by click on Page Name");
-        clickToElement(driver.findElement(By.xpath(String.format(MyInfoPageUI.PAGE_LOCATOR_BY_NAME, pageName))));
-    }
+//    /**
+//     * Opens a specific page by clicking on its name.
+//     * The page name is used to locate the corresponding web element.
+//     *
+//     * @param pageName The name of the page to open.
+//     */
+//    public void openPageByPageName(String pageName) {
+//        System.out.println("Open the Page by click on Page Name");
+//        clickToElement(driver.findElement(By.xpath(String.format(MyInfoPageUI.PAGE_LOCATOR_BY_NAME, pageName))));
+//    }
 
     /**
      * Clicks on the employee avatar on the My Info page.
@@ -74,6 +74,11 @@ public class MyInfoPageObject extends BasePage {
         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.UPLOAD_FILE_TYPE)));
         uploadMultipleFiles(driver.findElement(By.xpath(PersonalDetailPageUI.UPLOAD_FILE_TYPE)), fileName);
         takeSnap(driver, "avatar1");
+    }
+
+    public String getUploadFileErrorMessage() {
+        waitForElementVisible(driver.findElement(By.xpath(MyInfoPageUI.INVALID_FILE_TYPE_ERROR_MESSAGE)));
+        return driver.findElement(By.xpath(MyInfoPageUI.INVALID_FILE_TYPE_ERROR_MESSAGE)).getText();
     }
 
     /**

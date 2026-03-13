@@ -29,6 +29,7 @@ public class HandleDataTable_DynamicLocator extends BaseTest {
 
     @Test()
     public void navigateToPageNumber() {
+        // Navigate to page
         homePageObject.openPageByNumber("2");
         Assert.assertTrue(homePageObject.isActivePageDisplayed("2"));
         basePage.takeSnap(driver, "page2");

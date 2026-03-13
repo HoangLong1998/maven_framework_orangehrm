@@ -61,6 +61,61 @@ public class BaseTest {
         return driver;
     }
 
+    /**
+     * Closes the browser driver and cleans up resources.
+     * This method ensures that the browser driver is properly terminated and any associated processes are killed.
+     * It also deletes all cookies before quitting the driver.
+     */
+    protected void closeBrowserDriver() {
+        String browserDriverName = null;
+        try {
+            if (driver != null) {
+                // Determine the browser driver name based on the WebDriver instance
+                String driverInstanceName = driver.toString().toLowerCase();
+                System.out.println("Driver instance name: " + driverInstanceName);
+                if (driverInstanceName.contains("chrome")) {
+                    browserDriverName = "chromedriver";
+                } else if (driverInstanceName.contains("firefox")) {
+                    browserDriverName = "geckodriver";
+                } else if (driverInstanceName.contains("edge")) {
+                    browserDriverName = "msedgedriver";
+                }
+                // Delete all cookies and quit the driver
+                driver.manage().deleteAllCookies();
+                driver.quit();
+            }
+        } catch (Exception e) {
+            // Log the exception message (if logging is enabled)
+            e.getMessage();
+            // Attempt to kill the browser driver process if the driver name is known
+            if (browserDriverName != null) {
+                killDriverProcess(browserDriverName);
+            }
+        }
+    }
+
+    /**
+     * Kills the browser driver process by its name.
+     * This method uses platform-specific commands to terminate the driver process.
+     *
+     * @param driverName The name of the browser driver process to kill (e.g., "chromedriver").
+     */
+    private void killDriverProcess(String driverName) {
+        try {
+            ProcessBuilder pb;
+            // Check the operating system and use the appropriate command
+            if (System.getProperty("os.name").toLowerCase().contains("window")) {
+                pb = new ProcessBuilder("taskkill", "/F", "/IM", driverName + ".exe");
+            } else {
+                pb = new ProcessBuilder("pkill", driverName);
+            }
+            // Start the process and wait for it to complete
+            pb.start().waitFor();
+        } catch (Exception e) {
+            // Log the exception message (if logging is enabled)
+            e.getMessage();
+        }
+    }
 
     /**
      * Verifies that a condition is true. If the condition is false, the failure is logged.
@@ -132,29 +187,51 @@ public class BaseTest {
         return pass;
     }
 
-    // Used to delete all files in ReportNG and Allure report before suite starts
+
+
+    //   Delete file in report folder for ReportNG and Allure report
+    /**
+     * Deletes all files in specific folders before the test suite starts.
+     * This method is annotated with @BeforeSuite, ensuring it runs once before any tests in the suite.
+     * It targets two specific folders: "reportNGImage" and "allure-json".
+     */
     @BeforeSuite
     public void deleteFileInReport() {
-        // Remove all file in ReportNG screenshot (image)
+        // Remove all files in the ReportNG screenshot folder (images)
         deleteAllFileInFolder("reportNGImage");
 
-        // Remove all file in Allure attachment (json file)
+        // Remove all files in the Allure attachment folder (JSON files)
         deleteAllFileInFolder("allure-json");
     }
 
+    /**
+     * Deletes all files in the specified folder.
+     * This method iterates through all files in the given folder and deletes them,
+     * except for files named "environment.properties".
+     *
+     * @param folderName The name of the folder from which files will be deleted.
+     */
     public void deleteAllFileInFolder(String folderName) {
         try {
+            // Construct the full path to the folder
             String pathFolderDownload = GlobalConstants.PROJECT_PATH + folderName;
             File file = new File(pathFolderDownload);
+
+            // Get a list of all files in the folder
             File[] listOfFiles = file.listFiles();
+
+            // Check if the folder contains files
             if (listOfFiles != null && listOfFiles.length != 0) {
+                // Iterate through each file in the folder
                 for (int i = 0; i < listOfFiles.length; i++) {
+                    // Delete the file if it is not "environment.properties"
                     if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("environment.properties")) {
                         new File(listOfFiles[i].toString()).delete();
                     }
                 }
             }
         } catch (Exception e) {
+            // Print the stack trace in case of an exception
             e.printStackTrace();
         }
     }

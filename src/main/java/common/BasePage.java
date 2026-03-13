@@ -47,14 +47,19 @@ public class BasePage {
      */
 
     public void clickToElement(WebElement element) {
+        scrollToElement(element);
         waitForElementClickable(element);
-        element.click();
+        try {
+            element.click();
+        } catch (ElementClickInterceptedException e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        }
     }
 
 
     /**
      * Checks if a spinner (loading indicator) has disappeared from the page.
-     *
+     * <p>
      * This method waits for the specified web element (spinner) to become invisible.
      * If the spinner disappears within the timeout period, the method returns true.
      * If the spinner does not disappear and a TimeoutException is thrown, the method catches
@@ -70,6 +75,19 @@ public class BasePage {
         } catch (TimeoutException e) {
             return false;
         }
+    }
+
+    public void waitForSpinnerLoadingDisAppeared() {
+        try {
+            WebElement spinner = driver.findElement(By.xpath(BasePageUI.LOADING_ICON));
+            waitForElementInvisible(spinner);
+        } catch (NoSuchElementException | TimeoutException e) {
+            // Spinner not present or already disappeared, continue
+        }
+    }
+
+    public void clickToLogOut() {
+        selectItemInCustomDropdown(driver.findElement(By.xpath(BasePageUI.USER_DROPDOWN)), BasePageUI.USER_DROPDOWN_OPTION_LIST, "Logout");
     }
 
 
@@ -103,8 +121,37 @@ public class BasePage {
      * @return true if the element is displayed, false otherwise
      */
     public boolean isElementDisplayed(WebElement element) {
-        return element.isDisplayed();
+        boolean status = true;
+        try {
+            if (element.isDisplayed()) {
+                return true;
+            }
+        } catch (NoSuchElementException e) {
+            status = false;
+        }
+        return status;
     }
+
+    /**
+     * Checks if the specified web element is not displayed on the page.
+     *
+     * @param locator the web element to check
+     * @return true if the element is not displayed or does not exist, false otherwise
+     */
+    public boolean isElementUndisplayed(By locator) {
+        List<WebElement> elements = driver.findElements(locator);
+        if (elements.isEmpty()) {
+            System.out.println("Element not in DOM");
+            return true;
+        } else if (elements.size() > 0 && !elements.get(0).isDisplayed()) {
+            System.out.println("Element in DOM but not visible/ displayed in UI");
+            return true;
+        } else {
+            System.out.println("Element in DOM and visible/ displayed in UI");
+            return false;
+        }
+    }
+
 
     /**
      * Checks if the specified web element is enabled.
@@ -177,8 +224,14 @@ public class BasePage {
      * @param element the web element to wait for
      */
     public void waitForElementVisible(WebElement element) {
-        WebDriverWait waitExplicit = new WebDriverWait(driver, java.time.Duration.ofSeconds(30));
-        waitExplicit.until(ExpectedConditions.visibilityOf(element));
+        try {
+            WebDriverWait waitExplicit = new WebDriverWait(driver, java.time.Duration.ofSeconds(30));
+            waitExplicit.until(ExpectedConditions.visibilityOf(element));
+        } catch (Exception e) {
+            e.printStackTrace();
+            //  log("❌ Wait for element visible failed: " + e.getMessage());
+        }
+
     }
 
     /**
@@ -215,22 +268,23 @@ public class BasePage {
     /**
      * Waits until the specified web element is not present in the DOM.
      *
-     * @param element the web element to wait for
+     * @param locator the web element to wait for
      */
-    public void waitForElementNotPresent(WebElement element) {
+    public void waitForElementNotPresent(By locator) {
         WebDriverWait waitExplicit = new WebDriverWait(driver, java.time.Duration.ofSeconds(30));
-        waitExplicit.until(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated((By) element)));
+        waitExplicit.until(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(locator)));
     }
 
     /**
      * Waits until the specified web element is present in the DOM.
      *
-     * @param element the web element to wait for
+     * @param locator the web element to wait for
      */
-    public void waitForElementPresence(WebElement element) {
+    public void waitForElementPresence(By locator) {
         WebDriverWait waitExplicit = new WebDriverWait(driver, java.time.Duration.ofSeconds(30));
-        waitExplicit.until(ExpectedConditions.presenceOfElementLocated((By) element));
+        waitExplicit.until(ExpectedConditions.presenceOfElementLocated(locator));
     }
+
 
     /**
      * Waits until the specified web element is stale.
@@ -290,27 +344,20 @@ public class BasePage {
      * @param childItemXpath the XPath string used to locate all child items in the dropdown
      * @param expectedItem   the text of the item to be selected
      */
+
+    // Update usage in selectItemInCustomDropdown
     public void selectItemInCustomDropdown(WebElement parentElement, String childItemXpath, String expectedItem) {
-        // Click to open the dropdown
         clickToElement(parentElement);
-        sleepInSecond(1);
-
-        // Wait for all items to be present
-        waitForElementPresence(parentElement);
-        // Get all items
+        sleepInSecond(2);
+        waitForElementPresence(By.xpath(childItemXpath));
         List<WebElement> allItems = getListElements(childItemXpath);
-
-        // Loop through items and click the expected one
+        System.out.println("Total items: " + allItems.size());
         for (WebElement item : allItems) {
             if (item.getText().trim().equals(expectedItem)) {
-                item.click();
-            } else {
-                // Scroll to the item if it's not visible
-                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", item);
-                sleepInSecond(1);
-                item.click();
+                System.out.println("Selected item: " + item.getText());
+                clickToElement(item);
+                break;
             }
-            break;
         }
     }
 
@@ -593,6 +640,21 @@ public class BasePage {
     }
 
 
+    /**
+     * Generates a random number based on the current system time in milliseconds.
+     * <p>
+     * This method uses the `System.currentTimeMillis()` function to retrieve the current time
+     * in milliseconds since the Unix epoch (January 1, 1970, 00:00:00 GMT). The result is
+     * converted to a `String` and returned. This can be useful for generating unique identifiers
+     * or timestamps.
+     *
+     * @return A `String` representation of the current system time in milliseconds.
+     */
+    public String generateRandomNumber() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+
+
     //-----------------------------------------------------------------------------Take ScreenShot --------------------------------------------------------------------------------------
 
     /**
@@ -634,11 +696,26 @@ public class BasePage {
 
     /**
      * Opens a specific page by clicking on its name. from the main menu.
+     *
      * @param pageName The name of the sub-page to open.
      */
     @Step("Open Page By Page Name: {0}")
     public void openPageByPageName(String pageName) {
         System.out.println("Clicked on Sub Page by Page Name");
         clickToElement(driver.findElement(By.xpath(String.format(BasePageUI.PAGE_LOCATOR_BY_NAME, pageName))));
+        sleepInSecond(3);
     }
+
+
+    public Set<Cookie> getAllCookies() {
+        return driver.manage().getCookies();
+
+    }
+
+    public void setCookies(Set<Cookie> cookies) {
+        for (Cookie cookie : cookies) {
+            driver.manage().addCookie(cookie);
+        }
+    }
+
 }
