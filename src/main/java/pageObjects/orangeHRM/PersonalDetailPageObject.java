@@ -55,19 +55,42 @@ public class PersonalDetailPageObject extends BasePage {
         return getElementAttribute(driver.findElement(By.xpath(PersonalDetailPageUI.EMPLOYEE_ID)), "value");
     }
 
-     public void setMiddleName(String middleName) {
-         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.MIDDLE_NAME)));
-         setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.MIDDLE_NAME)), middleName);
-     }
+    /**
+     * Sets the middle name of the employee in the Personal Details page.
+     * @param middleName The middle name to be entered into the middle name field.
+     */
+    public void setMiddleName(String middleName) {
+        waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.MIDDLE_NAME)));
+        setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.MIDDLE_NAME)), middleName);
+    }
 
-     public void setDriverLicenseNumber(String driverLicenseNumber) {
-         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.DRIVER_LICENSE_NUMBER)));
-         setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.DRIVER_LICENSE_NUMBER)), driverLicenseNumber);
-     }
-     public void setLicenseExpiryDate(String licenseExpiryDate) {
-         waitForElementVisible(driver.findElement(By.xpath(PersonalDetailPageUI.LICENSE_EXPIRY_DATE)));
-         setTextToElement(driver.findElement(By.xpath(PersonalDetailPageUI.LICENSE_EXPIRY_DATE)), licenseExpiryDate);
-     }
+    /**
+     * Sets the driver license number of the employee in the Personal Details page.
+     * @param driverLicenseNumber The driver license number to be entered into the field.
+     */
 
+    /**
+     * Selects the License Expiry Date using the date picker calendar.
+     *
+     * @param year  the target year (e.g. "2025")
+     * @param month the target month name (e.g. "May")
+     * @param day   the target day (e.g. "15")
+     */
+    @Step("Select License Expiry Date: {0}-{1}-{2}")
+    public void selectLicenseExpiryDate(String year, String month, String day) {
+        selectDateInDatePicker("License Expiry Date", year, month, day);
+    }
+
+    /**
+     * Selects the Date of Birth using the date picker calendar.
+     *
+     * @param year  the target year (e.g. "1990")
+     * @param month the target month name (e.g. "December")
+     * @param day   the target day (e.g. "25")
+     */
+    @Step("Select Date of Birth: {0}-{1}-{2}")
+    public void selectDateOfBirth(String year, String month, String day) {
+        selectDateInDatePicker("Date of Birth", year, month, day);
+    }
 
 }

@@ -33,16 +33,16 @@ public class MyInfoPageObject extends BasePage {
         return personalDetailPage;
     }
 
-//    /**
-//     * Opens a specific page by clicking on its name.
-//     * The page name is used to locate the corresponding web element.
-//     *
-//     * @param pageName The name of the page to open.
-//     */
-//    public void openPageByPageName(String pageName) {
-//        System.out.println("Open the Page by click on Page Name");
-//        clickToElement(driver.findElement(By.xpath(String.format(MyInfoPageUI.PAGE_LOCATOR_BY_NAME, pageName))));
-//    }
+    /**
+     * Opens a specific page by clicking on its name.
+     * The page name is used to locate the corresponding web element.
+     *
+     * @param pageName The name of the page to open.
+     */
+    public void openSubPageByPageName(String pageName) {
+        System.out.println("Open the Page by click on Page Name");
+        clickToElement(driver.findElement(By.xpath(String.format(MyInfoPageUI.PAGE_LOCATOR_BY_NAME_2, pageName))));
+    }
 
     /**
      * Clicks on the employee avatar on the My Info page.

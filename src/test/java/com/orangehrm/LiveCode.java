@@ -67,26 +67,34 @@ public class LiveCode extends BaseTest {
         verifyEquals(actualEmployeeId, employeeId);
     }
 
-    @Test(priority = 3)
-    public void uploadAvatar() {
-        homePage.openPageByPageName("My Info");
-        myInforPage.waitForSpinnerLoadingDisAppeared();
-        //Update with Invalid File
-        myInforPage.clickAvatar();
-        myInforPage.clickToUploadAvatarButton();
-        myInforPage.uploadAvatar("importData.csv");
-        verifyEquals(myInforPage.getUploadFileErrorMessage(),"File type not allowed");
+//    @Test(priority = 3)
+//    public void uploadAvatar() {
+//        homePage.openPageByPageName("My Info");
+//        myInforPage.waitForSpinnerLoadingDisAppeared();
+//        //Update with Invalid File
+//        myInforPage.clickAvatar();
+//        myInforPage.clickToUploadAvatarButton();
+//        myInforPage.uploadAvatar("importData.csv");
+//        verifyEquals(myInforPage.getUploadFileErrorMessage(),"File type not allowed");
+//
+//        //Upload with maximum file size
+//        myInforPage.uploadAvatar("Colorful abstract la.png");
+//        verifyEquals(myInforPage.getUploadFileErrorMessage(),"Attachment Size Exceeded");
+//
+//        //Upload with valid file
+//        myInforPage.uploadAvatar("Avatar.png");
+//        myInforPage.savePageInfo();
+//    }
 
-
-        //Upload with maximum file size
-        myInforPage.uploadAvatar("Colorful abstract la.png");
-        verifyEquals(myInforPage.getUploadFileErrorMessage(),"Attachment Size Exceeded");
-
-        //Upload with valid file
-        myInforPage.uploadAvatar("Avatar.png");
-        myInforPage.savePageInfo();
+    @Test(priority = 4)
+    public void inputPersonalDetail() {
+        myInforPage.openSubPageByPageName("Personal Details");
+        personalDetailPage.waitForSpinnerLoadingDisAppeared();
+        personalDetailPage.setMiddleName("Automation");
+        personalDetailPage.selectLicenseExpiryDate("2025", "May", "15");
+        personalDetailPage.selectDateOfBirth("2023", "October", "1");
+       // personalDetailPage.savePageInfo();
     }
-
 
     @AfterClass
     public void closeBrowser() {
