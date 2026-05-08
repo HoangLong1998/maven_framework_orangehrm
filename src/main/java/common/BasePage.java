@@ -3,6 +3,7 @@ package common;
 import interfaces.pageUIs.OrangeHRM.HomePageUI;
 import io.qameta.allure.Step;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.interactions.Actions;
@@ -13,12 +14,11 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.openqa.selenium.support.ui.Select;
-
-import java.util.List;
 
 
 /**
@@ -308,10 +308,22 @@ public class BasePage {
 -----------------------------------------------------------------------------------------------------------------DropDown ---------------------------------------------------------------------------------------------
 */
 
-    public void selectItemInDefaultDropdown(WebDriver driver, WebElement element, String textItem) {
+    public void selectItemInDefaultDropdownByText(WebElement element, String textItem) {
         waitForElementVisible(element);
         Select select = new Select(element);
         select.selectByVisibleText(textItem);
+    }
+
+    public void selectItemInDefaultDropdownByIndex(WebElement element, int index) {
+        waitForElementVisible(element);
+        Select select = new Select(element);
+        select.selectByIndex(index);
+    }
+
+    public String getSelectedItemInDefaultDropdown(WebElement element) {
+        waitForElementVisible(element);
+        Select select = new Select(element);
+        return select.getFirstSelectedOption().getText();
     }
 
     /**
@@ -691,6 +703,125 @@ public class BasePage {
         return allValues;
     }
 
+    /**
+     * Retrieves all text values from a specific column in a table based on the column name.
+     *
+     * @param driver     the WebDriver instance used to interact with the browser
+     * @param columnName the name of the column to retrieve values from
+     * @return a list of strings representing the text values in the specified column
+     */
+    public List<String> getColumnData(WebDriver driver, String columnName) {
+        // get all headers
+        List<WebElement> headers = driver.findElements(
+                By.xpath("//div[@role='columnheader']")
+        );
+        int columnIndex = -1;
+        // get column index by column name
+        for (int i = 0; i < headers.size(); i++) {
+            if (headers.get(i).getText().trim().equalsIgnoreCase(columnName)) {
+                columnIndex = i;
+                break;
+            }
+        }
+        if (columnIndex == -1) {
+            throw new RuntimeException(columnName + " not found in table headers");
+        }
+        // get all rows
+        List<WebElement> rows = driver.findElements(
+                By.xpath("//div[@role='row' and .//div[@role='cell']]")
+        );
+        List<String> result = new ArrayList<>();
+        // get cell value by column index for each row
+        for (WebElement row : rows) {
+            List<WebElement> cells = row.findElements(
+                    By.xpath(".//div[@role='cell']")
+            );
+            if (cells.size() > columnIndex) {
+                result.add(cells.get(columnIndex).getText().trim());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Checks if the data in a specific column of a table is sorted in ascending order.
+     *
+     * @param columnName the name of the column to check for sorting
+     * @return true if the data is sorted in ascending order, false otherwise
+     */
+    public boolean isDataSortedAscendingByColumn(String columnName) {
+        ArrayList<String> columnData = new ArrayList<String>();
+        List<String> data = getColumnData(driver, columnName);
+        for (String item : data) {
+            columnData.add(item);
+
+        }
+        ArrayList<String> sortedList = new ArrayList<String>();
+        for (String item : columnData) {
+            sortedList.add(item);
+        }
+
+        Collections.sort(sortedList, String.CASE_INSENSITIVE_ORDER);
+        return columnData.equals(sortedList);
+
+    }
+
+    /**
+     * Checks if the data in a specific column of a table is sorted in descending order.
+     *
+     * @param columnName the name of the column to check for sorting
+     * @return true if the data is sorted in descending order, false otherwise
+     */
+    public boolean isDataSortedDescendingByColumn(String columnName) {
+        ArrayList<String> columnData = new ArrayList<String>();
+        List<String> data = getColumnData(driver, columnName);
+        for (String item : data) {
+            columnData.add(item);
+
+        }
+        ArrayList<String> sortedList = new ArrayList<String>();
+        for (String item : columnData) {
+            sortedList.add(item);
+        }
+
+        Collections.sort(sortedList, String.CASE_INSENSITIVE_ORDER.reversed());
+        return columnData.equals(sortedList);
+    }
+
+
+    /**
+     * Checks if the data in a specific column of a table is sorted in ascending order based on date values.
+     *
+     * @param locator the XPath string used to locate the date values in the column
+     * @return true if the date values are sorted in ascending order, false otherwise
+     */
+    public boolean isDateSortedAscending(String locator){
+        ArrayList<Date> arrayList = new ArrayList<Date>();
+        List<WebElement> elementList = driver.findElements(By.xpath(locator));
+        for (WebElement element : elementList) {
+            arrayList.add(convertStringToDate(element.getText()));
+        }
+
+        System.out.println("--------- Dữ liệu trên UI ---------");
+        for (Date name : arrayList) {
+            System.out.println(name);
+        }
+
+        ArrayList<Date> sortedList = new ArrayList<Date>();
+
+        for (Date child : arrayList) {
+            sortedList.add(child);
+        }
+
+        Collections.sort(sortedList);
+
+        System.out.println("--------- Dữ liệu đã SORT ASC trong code ---------");
+        for (Date name : sortedList) {
+            System.out.println(name);
+        }
+
+        return sortedList.equals(arrayList);
+    }
     //-----------------------------------------------------------------------------BaseFunctions --------------------------------------------------------------------------------------
 
 
@@ -717,5 +848,163 @@ public class BasePage {
             driver.manage().addCookie(cookie);
         }
     }
+
+    /**
+     * Converts a date string in the format "MMM dd, yyyy" (e.g., "May 15, 2025") to a Date object.
+     *
+     * @param  dateInString the date string to convert
+     * @return a Date object representing the parsed date, or null if parsing fails
+     */
+    public Date convertStringToDate(String dateInString) {
+        dateInString = dateInString.replace(",", "");
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd yyyy");
+        Date date = null;
+        try {
+            date = formatter.parse(dateInString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
+
+    //-----------------------------------------------------------------------------Date Picker  --------------------------------------------------------------------------------------
+// All 12 month names displayed in the OrangeHRM calendar header
+    private static final List<String> MONTH_NAMES = Arrays.asList(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+    );
+
+    /**
+     * Selects a date in the OrangeHRM date picker by clicking the input, navigating to the correct month/year, and clicking the day.
+     * This method is reusable for any date picker field on the page (e.g. License Expiry Date, Date of Birth, etc.)
+     *
+     * <p>How it works:</p>
+     * <ol>
+     *   <li>Finds the date input by its label text and clicks it to open the calendar popup</li>
+     *   <li>Reads the currently displayed month and year from the calendar header</li>
+     *   <li>Calculates how many months to navigate forward or backward</li>
+     *   <li>Clicks the previous/next arrow buttons to reach the target month/year</li>
+     *   <li>Clicks the target day number in the calendar grid</li>
+     * </ol>
+     *
+     * <p>Usage example:</p>
+     * <pre>
+     *   selectDateInDatePicker("License Expiry Date", "2025", "May", "15");
+     *   selectDateInDatePicker("Date of Birth", "1990", "December", "25");
+     * </pre>
+     *
+     * @param fieldLabel the label text of the date field (e.g. "License Expiry Date", "Date of Birth")
+     * @param year       the target year as a String (e.g. "2025")
+     * @param month      the target month name (e.g. "May", "December")
+     * @param day        the target day as a String (e.g. "15", "7")
+     */
+    public void selectDateInDatePicker(String fieldLabel, String year, String month, String day) {
+        // Step 1: Click the date input to open the calendar
+        String dateInputXpath = String.format(BasePageUI.DATE_INPUT_BY_LABEL, fieldLabel);
+        WebElement dateInput = driver.findElement(By.xpath(dateInputXpath));
+        clickToElement(dateInput);
+        sleepInSecond(1);
+
+        // Step 2: Wait for calendar popup to appear
+        waitForElementPresence(By.xpath(BasePageUI.DATE_PICKER_CALENDAR));
+
+        // Step 3: Navigate to the correct month and year
+        navigateToMonthYear(year, month);
+
+        // Step 4: Click the target day
+        try {
+            clickDayInCalendar(day);
+        } catch (RuntimeException e) {
+            // Fallback for UI variants where date cells are rendered differently.
+            setTextToElement(dateInput, buildDateValue(year, month, day));
+            dateInput.sendKeys(Keys.TAB);
+        }
+    }
+
+    /**
+     * Navigates the calendar to the target month and year by clicking the left/right arrow buttons.
+     *
+     * @param targetYear  the target year (e.g. "2025")
+     * @param targetMonth the target month name (e.g. "May")
+     */
+    private void navigateToMonthYear(String targetYear, String targetMonth) {
+        int targetYearInt = Integer.parseInt(targetYear);
+        int targetMonthIndex = MONTH_NAMES.indexOf(targetMonth);
+        if (targetMonthIndex < 0) {
+            throw new RuntimeException("Invalid target month: '" + targetMonth + "'");
+        }
+
+        while (true) {
+            // Read current month and year from the calendar header
+            String currentMonth = driver.findElement(By.xpath(BasePageUI.DATE_PICKER_MONTH_DISPLAY)).getText().trim();
+            int currentYear = Integer.parseInt(driver.findElement(By.xpath(BasePageUI.DATE_PICKER_YEAR_DISPLAY)).getText().trim());
+            int currentMonthIndex = MONTH_NAMES.indexOf(currentMonth);
+            if (currentMonthIndex < 0) {
+                throw new RuntimeException("Calendar returned unknown month label: '" + currentMonth + "'");
+            }
+
+            // Calculate total months difference
+            int monthsDiff = (targetYearInt - currentYear) * 12 + (targetMonthIndex - currentMonthIndex);
+
+            if (monthsDiff == 0) {
+                break;
+            } else if (monthsDiff < 0) {
+                // Click the previous month button
+                clickToElement(driver.findElement(By.xpath(BasePageUI.DATE_PICKER_PREVIOUS_BUTTON)));
+            } else {
+                // Click the next month button
+                clickToElement(driver.findElement(By.xpath(BasePageUI.DATE_PICKER_NEXT_BUTTON)));
+            }
+            sleepInSecond(1);
+        }
+    }
+
+    /**
+     * Clicks the target day number in the calendar grid.
+     * Only clicks day cells that belong to the current month (excludes offset days from previous/next month).
+     *
+     * @param day the day number to click (e.g. "15")
+     */
+    private void clickDayInCalendar(String day) {
+        String normalizedTargetDay = normalizeDay(day);
+        List<WebElement> dayCells = driver.findElements(By.xpath(BasePageUI.DATE_PICKER_DAY_CELLS));
+
+        // Fallback locator for OrangeHRM UI variants where wrapper classes may differ.
+        if (dayCells.isEmpty()) {
+            dayCells = driver.findElements(By.xpath(
+                    BasePageUI.DATE_PICKER_CALENDAR +
+                            "//div[contains(@class,'oxd-calendar-date') and normalize-space(.)!='' and " +
+                            "not(ancestor::*[contains(@class,'--offset')])]"
+            ));
+        }
+
+        for (WebElement cell : dayCells) {
+            String cellDay = normalizeDay(cell.getText());
+            if (cellDay.equals(normalizedTargetDay)) {
+                clickToElement(cell);
+                return;
+            }
+        }
+        throw new RuntimeException("Day '" + day + "' not found in the calendar");
+    }
+
+    private String normalizeDay(String dayText) {
+        try {
+            return String.valueOf(Integer.parseInt(dayText.trim()));
+        } catch (NumberFormatException e) {
+            return dayText.trim();
+        }
+    }
+
+    private String buildDateValue(String year, String month, String day) {
+        int monthIndex = MONTH_NAMES.indexOf(month);
+        if (monthIndex < 0) {
+            throw new RuntimeException("Invalid month for input fallback: '" + month + "'");
+        }
+        int normalizedDay = Integer.parseInt(normalizeDay(day));
+        return String.format("%s-%02d-%02d", year, monthIndex + 1, normalizedDay);
+    }
+
 
 }

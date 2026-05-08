@@ -34,7 +34,7 @@ public class PIMPageObject extends BasePage {
         super(driver);
         this.driver = driver;
         this.addEmployee = new AddEmployeePageObject(driver);
-        this.employeeList = new EmployeeListPageObject();
+        this.employeeList = new EmployeeListPageObject(driver);
         this.configuration = new ConfigurationPageObject(driver);
     }
 

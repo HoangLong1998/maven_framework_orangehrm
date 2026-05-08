@@ -1,6 +1,7 @@
 package common;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import enums.BrowserType;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -43,11 +44,22 @@ public class BaseTest {
             case EDGE:
                 driver = new EdgeDriver();
                 break;
+//            case CHROME_HEADLESS:
+//                ChromeOptions chromeOptions = new ChromeOptions();
+//                chromeOptions.addArguments("--headless");
+//                chromeOptions.addArguments("window-size=1920,1080");
+//                chromeOptions.addArguments("--lang=vi");
+//                chromeOptions.setAcceptInsecureCerts(true);
+//                chromeOptions.addArguments("--disable-notifications");
+//                chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+//                driver = new ChromeDriver(chromeOptions);
+//                break;
             default:
                 throw new RuntimeException("Please enter correct browser name");
         }
         driver.get(url);
         //    log.info("Launch " + browserName + " browser and navigate to: " + url);
+        //    if set window-size for headless mode, should not use window.maximize()
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
         return driver;
@@ -188,8 +200,8 @@ public class BaseTest {
     }
 
 
-
     //   Delete file in report folder for ReportNG and Allure report
+
     /**
      * Deletes all files in specific folders before the test suite starts.
      * This method is annotated with @BeforeSuite, ensuring it runs once before any tests in the suite.

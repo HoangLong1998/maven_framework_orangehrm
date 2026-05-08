@@ -25,12 +25,31 @@
 <!--        </classes>-->
 <!--    </test>-->
 
-    <test name="Live Code">
-        <parameter name="url" value="http://localhost:8080/orangehrm/orangehrm-5.7/"/>
-        <parameter name="browser" value="chrome"/>
+<!--    <test name="Live Code">-->
+<!--        <parameter name="url" value="http://localhost:8080/orangehrm"/>-->
+<!--        <parameter name="browser" value="chrome"/>-->
+<!--        <classes>-->
+<!--            &lt;!&ndash;   <class name="com.orangehrm.AllureReport"/>&ndash;&gt;-->
+<!--            <class name="com.orangehrm.LiveCode"/>-->
+<!--        </classes>-->
+<!--    </test>-->
+
+<!--    <test name="Browser Configuration">-->
+<!--        <parameter name="url" value="http://localhost:8080/orangehrm"/>-->
+<!--        <parameter name="browser" value="Chrome_headless"/>-->
+<!--        <classes>-->
+<!--            &lt;!&ndash;   <class name="com.orangehrm.AllureReport"/>&ndash;&gt;-->
+<!--            <class name="com.orangehrm.BrowserConfig"/>-->
+<!--        </classes>-->
+<!--    </test>-->
+
+
+    <test name="Sort Data Table">
+        <parameter name="url" value="http://localhost:8080/orangehrm"/>
+        <parameter name="browser" value="Chrome"/>
         <classes>
             <!--   <class name="com.orangehrm.AllureReport"/>-->
-            <class name="com.orangehrm.LiveCode"/>
+            <class name="com.orangehrm.SortData"/>
         </classes>
     </test>
 </suite>

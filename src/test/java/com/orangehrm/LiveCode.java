@@ -77,7 +77,6 @@ public class LiveCode extends BaseTest {
         myInforPage.uploadAvatar("importData.csv");
         verifyEquals(myInforPage.getUploadFileErrorMessage(),"File type not allowed");
 
-
         //Upload with maximum file size
         myInforPage.uploadAvatar("Colorful abstract la.png");
         verifyEquals(myInforPage.getUploadFileErrorMessage(),"Attachment Size Exceeded");
@@ -87,6 +86,15 @@ public class LiveCode extends BaseTest {
         myInforPage.savePageInfo();
     }
 
+    @Test(priority = 4)
+    public void inputPersonalDetail() {
+        myInforPage.openSubPageByPageName("Personal Details");
+        personalDetailPage.waitForSpinnerLoadingDisAppeared();
+        personalDetailPage.setMiddleName("Automation");
+        personalDetailPage.selectLicenseExpiryDate("2025", "May", "15");
+        personalDetailPage.selectDateOfBirth("2023", "October", "1");
+       // personalDetailPage.savePageInfo();
+    }
 
     @AfterClass
     public void closeBrowser() {
