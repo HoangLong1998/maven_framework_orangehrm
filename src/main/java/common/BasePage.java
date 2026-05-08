@@ -3,6 +3,7 @@ package common;
 import interfaces.pageUIs.OrangeHRM.HomePageUI;
 import io.qameta.allure.Step;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.interactions.Actions;
@@ -13,13 +14,11 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.openqa.selenium.support.ui.Select;
-
-import java.util.List;
 
 
 /**
@@ -309,10 +308,22 @@ public class BasePage {
 -----------------------------------------------------------------------------------------------------------------DropDown ---------------------------------------------------------------------------------------------
 */
 
-    public void selectItemInDefaultDropdown(WebDriver driver, WebElement element, String textItem) {
+    public void selectItemInDefaultDropdownByText(WebElement element, String textItem) {
         waitForElementVisible(element);
         Select select = new Select(element);
         select.selectByVisibleText(textItem);
+    }
+
+    public void selectItemInDefaultDropdownByIndex(WebElement element, int index) {
+        waitForElementVisible(element);
+        Select select = new Select(element);
+        select.selectByIndex(index);
+    }
+
+    public String getSelectedItemInDefaultDropdown(WebElement element) {
+        waitForElementVisible(element);
+        Select select = new Select(element);
+        return select.getFirstSelectedOption().getText();
     }
 
     /**
@@ -692,6 +703,125 @@ public class BasePage {
         return allValues;
     }
 
+    /**
+     * Retrieves all text values from a specific column in a table based on the column name.
+     *
+     * @param driver     the WebDriver instance used to interact with the browser
+     * @param columnName the name of the column to retrieve values from
+     * @return a list of strings representing the text values in the specified column
+     */
+    public List<String> getColumnData(WebDriver driver, String columnName) {
+        // get all headers
+        List<WebElement> headers = driver.findElements(
+                By.xpath("//div[@role='columnheader']")
+        );
+        int columnIndex = -1;
+        // get column index by column name
+        for (int i = 0; i < headers.size(); i++) {
+            if (headers.get(i).getText().trim().equalsIgnoreCase(columnName)) {
+                columnIndex = i;
+                break;
+            }
+        }
+        if (columnIndex == -1) {
+            throw new RuntimeException(columnName + " not found in table headers");
+        }
+        // get all rows
+        List<WebElement> rows = driver.findElements(
+                By.xpath("//div[@role='row' and .//div[@role='cell']]")
+        );
+        List<String> result = new ArrayList<>();
+        // get cell value by column index for each row
+        for (WebElement row : rows) {
+            List<WebElement> cells = row.findElements(
+                    By.xpath(".//div[@role='cell']")
+            );
+            if (cells.size() > columnIndex) {
+                result.add(cells.get(columnIndex).getText().trim());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Checks if the data in a specific column of a table is sorted in ascending order.
+     *
+     * @param columnName the name of the column to check for sorting
+     * @return true if the data is sorted in ascending order, false otherwise
+     */
+    public boolean isDataSortedAscendingByColumn(String columnName) {
+        ArrayList<String> columnData = new ArrayList<String>();
+        List<String> data = getColumnData(driver, columnName);
+        for (String item : data) {
+            columnData.add(item);
+
+        }
+        ArrayList<String> sortedList = new ArrayList<String>();
+        for (String item : columnData) {
+            sortedList.add(item);
+        }
+
+        Collections.sort(sortedList, String.CASE_INSENSITIVE_ORDER);
+        return columnData.equals(sortedList);
+
+    }
+
+    /**
+     * Checks if the data in a specific column of a table is sorted in descending order.
+     *
+     * @param columnName the name of the column to check for sorting
+     * @return true if the data is sorted in descending order, false otherwise
+     */
+    public boolean isDataSortedDescendingByColumn(String columnName) {
+        ArrayList<String> columnData = new ArrayList<String>();
+        List<String> data = getColumnData(driver, columnName);
+        for (String item : data) {
+            columnData.add(item);
+
+        }
+        ArrayList<String> sortedList = new ArrayList<String>();
+        for (String item : columnData) {
+            sortedList.add(item);
+        }
+
+        Collections.sort(sortedList, String.CASE_INSENSITIVE_ORDER.reversed());
+        return columnData.equals(sortedList);
+    }
+
+
+    /**
+     * Checks if the data in a specific column of a table is sorted in ascending order based on date values.
+     *
+     * @param locator the XPath string used to locate the date values in the column
+     * @return true if the date values are sorted in ascending order, false otherwise
+     */
+    public boolean isDateSortedAscending(String locator){
+        ArrayList<Date> arrayList = new ArrayList<Date>();
+        List<WebElement> elementList = driver.findElements(By.xpath(locator));
+        for (WebElement element : elementList) {
+            arrayList.add(convertStringToDate(element.getText()));
+        }
+
+        System.out.println("--------- Dữ liệu trên UI ---------");
+        for (Date name : arrayList) {
+            System.out.println(name);
+        }
+
+        ArrayList<Date> sortedList = new ArrayList<Date>();
+
+        for (Date child : arrayList) {
+            sortedList.add(child);
+        }
+
+        Collections.sort(sortedList);
+
+        System.out.println("--------- Dữ liệu đã SORT ASC trong code ---------");
+        for (Date name : sortedList) {
+            System.out.println(name);
+        }
+
+        return sortedList.equals(arrayList);
+    }
     //-----------------------------------------------------------------------------BaseFunctions --------------------------------------------------------------------------------------
 
 
@@ -719,6 +849,24 @@ public class BasePage {
         }
     }
 
+    /**
+     * Converts a date string in the format "MMM dd, yyyy" (e.g., "May 15, 2025") to a Date object.
+     *
+     * @param  dateInString the date string to convert
+     * @return a Date object representing the parsed date, or null if parsing fails
+     */
+    public Date convertStringToDate(String dateInString) {
+        dateInString = dateInString.replace(",", "");
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd yyyy");
+        Date date = null;
+        try {
+            date = formatter.parse(dateInString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return date;
+    }
 
     //-----------------------------------------------------------------------------Date Picker  --------------------------------------------------------------------------------------
 // All 12 month names displayed in the OrangeHRM calendar header
